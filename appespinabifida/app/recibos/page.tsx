@@ -214,7 +214,7 @@ export default function RecibosPage() {
 									))}
 									<tr className="bg-gray-50">
 										<td
-											colSpan="5"
+											
 											className="px-4 py-4 text-right text-sm font-bold text-gray-900"
 										>
 											TOTAL:
