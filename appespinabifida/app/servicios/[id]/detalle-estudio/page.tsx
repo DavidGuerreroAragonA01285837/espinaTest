@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import ImprimirOrdenButton from "../../../components/ImprimirOrdenButton";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,7 +34,19 @@ export default async function DetalleEstudioPage({
   const res = await fetch(
     `${process.env.BASE_URL}/api/servicios/obtener/estudios/porId?id=${id}`
   );
+  if (!res.ok) {
+    throw new Error(`Estudio no encontrado (id=${id})`);
+  }
   const data = await res.json();
+
+  function parseFechaHora(isoString: String) {
+    if (!isoString) return { fecha: null, hora: null };
+
+    const [fecha, timePart] = isoString.split('T');
+    const hora = timePart ? timePart.replace('Z', '') : null;
+
+    return { fecha, hora };
+  }
 
   return (
     <div className="space-y-6">
@@ -57,9 +70,20 @@ export default async function DetalleEstudioPage({
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-600 h-10">
+            <Link
+              href={`/servicios/${id}/editar-estudio`}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-600 h-10"
+            >
               Editar estudio
-            </button>
+            </Link>
+            <ImprimirOrdenButton
+              estudioId={data.id_estudio}
+              nombreAsociado={data.nombre_asociado ?? ""}
+              apellidosAsociado={data.apellidos_asociado ?? ""}
+              tipoEstudio={data.tipo_estudio ?? ""}
+              fecha={data.fecha ?? ""}
+              medicoEstudio={data.medico_estudio ?? ""}
+            />
           </div>
         </div>
       </div>
@@ -103,11 +127,11 @@ export default async function DetalleEstudioPage({
           </div>
           <div>
             <span className="mb-0.5 block text-xs text-slate-500">Fecha</span>
-            <span className="text-sm text-slate-800">{data.fecha}</span>
+            <span className="text-sm text-slate-800">{parseFechaHora(data.fecha).fecha}</span>
           </div>
           <div>
             <span className="mb-0.5 block text-xs text-slate-500">Hora</span>
-            <span className="text-sm text-slate-800">{data.hora}</span>
+            <span className="text-sm text-slate-800">{parseFechaHora(data.fecha).hora}</span>
           </div>
           <div>
             <span className="mb-0.5 block text-xs text-slate-500">
@@ -145,14 +169,9 @@ export default async function DetalleEstudioPage({
 
       {/* Resultados del estudio */}
       <div className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200/70 px-6 py-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Resultados del estudio
-          </h2>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-transparent px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 h-9">
-            Imprimir orden
-          </button>
-        </div>
+        <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Resultados del estudio
+        </h2>
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
           <p className="text-sm text-slate-400">
             Aún no se han registrado resultados para este estudio.

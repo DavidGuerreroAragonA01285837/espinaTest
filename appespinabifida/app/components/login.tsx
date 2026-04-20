@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 
@@ -11,7 +11,7 @@ export default function Login({error}: any) {
 
 	useEffect(() => {
 		if (session?.user) {
-			router.replace("/dashboard");
+			router.replace("/asociados");
 		}
 	}, [session, router]);
 
@@ -52,7 +52,7 @@ export default function Login({error}: any) {
 						await signIn("credentials", {
 							email,
 							password,
-							callbackUrl: "/dashboard"
+							callbackUrl: "/asociados"
 						});
 
 						
@@ -137,7 +137,7 @@ export default function Login({error}: any) {
 
 					<button
 						type="button"
-						onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+						onClick={() => signIn("google", { callbackUrl: "/asociados" })}
 						className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] border border-[#BFD3EA] bg-white text-base font-semibold text-[#003C64] shadow-[0_6px_16px_rgba(10,25,44,0.16)] transition hover:brightness-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#BFD3EA]"
 					>
 						<svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
